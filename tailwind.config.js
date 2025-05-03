@@ -7,4 +7,9 @@ module.exports = {
     extend: {},
   },
   plugins: [],
+<<<<<<< HEAD
 }
+=======
+}
+
+>>>>>>> c88b90b (add all code)
