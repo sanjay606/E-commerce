@@ -51,7 +51,6 @@ const appRouter = createBrowserRouter([
         path: "/about", // 💡 Keep path lowercase and no space
         element: (
           <Suspense>
-            {" "}
             <About />
           </Suspense>
         ),
@@ -73,8 +72,8 @@ const appRouter = createBrowserRouter([
         element: <RestaurantsMenu />,
       },
       {
-        path: "/cart", 
-        element: <Cart/>
+        path: "/cart",
+        element: <Cart />,
       },
     ],
   },
