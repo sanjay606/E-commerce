@@ -1,65 +1,60 @@
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import React, { useEffect } from "react";
-import { auth } from "../utils/firebase";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { addUser, removeUser } from "../utils/userSlice";
-import { LOGO } from "../utils/constant";
+import { LOGO_URL } from "../utils/constant";
+import { useContext, useState } from "react";
+import { Link } from "react-router-dom";
+import useOnlineStatus from "../utils/useOnlineStatus";
+import UserContext from "../utils/UserContext";
+import {useSelector} from "react-redux";
+
+
 const Header = () => {
-  const navigate = useNavigate();
-  const user = useSelector((store) => store.user);
-  const dispatch = useDispatch();
+  const [btnChange, setbtnChange] = useState("Login");
 
-  const handleSignOut = () => {
-    signOut(auth)
-      .then(() => {})
-      .catch((error) => {
-        navigate("/error");
-      });
-  };
+  const onlineStatus = useOnlineStatus();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        const { uid, Email, displayName, photoURL } = user;
-        dispatch(
-          addUser({
-            uid: uid,
-            Email: Email,
-            displayName: displayName,
-            photoURL: photoURL,
-          })
-        );
-        navigate("/browse");
-      } else {
-        dispatch(removeUser());
-        navigate("/");
-      }
-    });
-    //unsubscribe onAuth for unmounting .
-    return () => unsubscribe();
-  }, []);
+  const {logedInUser} = useContext(UserContext);
+
+
+  const cartItems = useSelector((store) => store.cart.items);
+  console.log(cartItems)
 
   return (
-    <div className="absolute px-8 py-2 w-screen  bg-gradient-to-b from-black z-10 flex justify-between ">
-      <img className="w-48 " src={LOGO} alt="Logo" />
-      {user && (
-        <div className="flex ">
-          <img
-            className="w-10 h-10 my-5 rounded-2xl"
-            alt="usericon"
-            src={user?.photoURL}
-          />
+    <div className="flex justify-between bg-pink-100 shadow-xl">
+      <div className="w-40">
+        <img className="nav-logo" src={LOGO_URL} alt="" />
+      </div>
+      <div className=" flex items-center">
+        <ul className="flex p-3 m-4">
+          <li>OnlineMode {onlineStatus ? "💚" : "❤️"} </li>
+          <li className="mx-3">
+            <Link to="/">Home</Link>
+          </li>
+          <li className="mx-3">
+            <Link to="/about">About</Link>
+          </li>
+          <li className="mx-3">
+            <Link to="/contact">Contact Us</Link>
+          </li>
+          <li className="mx-3">
+            <Link to="/grocery">Grocery</Link>
+          </li>
+          <li className="mx-3 ">
+            <Link to="/cart" className="font-bold ">🛒({cartItems.length}items )</Link>
+          </li>
+
+          <li className="mx-3 font-bold ">
+          <Link to=" ">{logedInUser}</Link>
+        </li>
           <button
-            onClick={handleSignOut}
-            className="font-bold text-white  mx-3 "
+            className="bg-green-300 px-3 rounded-lg "
+            onClick={() => {
+              setbtnChange(btnChange === "Login" ? "Logout" : "Login");
+            }}
           >
-            Sign Out
+            {btnChange}
           </button>
-        </div>
-      )}
+        </ul>
+      </div>
     </div>
   );
 };
-
 export default Header;
